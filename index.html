@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لعبة المكملات الغذائية التفاعلية</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .step {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transform: translateY(20px);
+            opacity: 0;
+            animation: slideIn 0.6s ease-out forwards;
+            display: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .step.active {
+            display: block;
+        }
+
+        .step::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        @keyframes slideIn {
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .patient-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .patient-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 200%;
+            background: rgba(255,255,255,0.1);
+            transform: rotate(45deg);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { transform: translateX(-100%) rotate(45deg); }
+            50% { transform: translateX(100%) rotate(45deg); }
+        }
+
+        .avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+            background: rgba(255,255,255,0.2);
+            border: 4px solid rgba(255,255,255,0.3);
+            transition: all 0.5s ease;
+            position: relative;
+        }
+
+        .avatar.happy {
+            animation: bounce 1s infinite alternate;
+        }
+
+        .avatar.sad {
+            animation: shake 0.5s;
+        }
+
+        @keyframes bounce {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-10px); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .bmi-calculator {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            padding: 25px;
+            border-radius: 15px;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .slider-container {
+            margin: 20px 0;
+        }
+
+        .slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: rgba(255,255,255,0.3);
+            outline: none;
+            -webkit-appearance: none;
+            margin: 10px 0;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: white;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .bmi-result {
+            text-align: center;
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .supplements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .supplement-card {
+            background: white;
+            border: 3px solid #e1e5e9;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .supplement-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        .supplement-card.selected {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .supplement-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 4px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00f2fe, #4facfe);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .feedback {
+            text-align: center;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+            font-size: 1.2rem;
+        }
+
+        .feedback.success {
+            background: linear-gradient(135deg, #a8e6cf 0%, #7fcdcd 100%);
+            color: #2d5a3d;
+        }
+
+        .feedback.error {
+            background: linear-gradient(135deg, #ffb3ba 0%, #ff9999 100%);
+            color: #8b0000;
+        }
+
+        .celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #667eea;
+            animation: confetti-fall 3s linear infinite;
+        }
+
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .step-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            margin: 0 5px;
+            transition: all 0.3s ease;
+        }
+        img{
+            max-width: 155px;
+        }
+        .step-dot.active {
+            background: white;
+            transform: scale(1.2);
+        }
+
+        .points-display {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.9);
+            padding: 15px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            color: #667eea;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .supplements-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="points-display">
+        Points: <span id="points">0</span>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1> لعبة المكملات الغذائية التفاعلية</h1>
+            <p>اختبر معلوماتك عن المكلات الغذائية بشكل عملى وممتع فى نفس الوقت</p>
+        </div>
+
+        <div class="step-indicator">
+            <div class="step-dot active" data-step="1"></div>
+            <div class="step-dot" data-step="2"></div>
+            <div class="step-dot" data-step="3"></div>
+            <div class="step-dot" data-step="4"></div>
+            <div class="step-dot" data-step="5"></div>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" style="width: 20%"></div>
+        </div>
+
+        <!-- Step 1: Personalization -->
+        <div class="step active" id="step-1">
+            <h2>👋 أهلا وسهلا بيك يا دكتور لو جاهز يالا نبدأ</h2>
+            <div class="form-group">
+                <label for="learner-name">الأسم:</label>
+                <input type="text" id="learner-name" placeholder="Enter your name">
+            </div>
+            <div class="form-group">
+                <label for="group-select">أختار رقم الجروب:</label>
+                <select id="group-select">
+                    <option value="">Choose a group...</option>
+                    <option value="A">Group 1</option>
+                    <option value="B">Group 2</option>
+                    <option value="C">Group 3</option>
+                    <option value="D">Group 4</option>
+                    <option value="E">Group 5</option>
+                </select>
+            </div>
+            <button class="btn" onclick="startScenario()">لنبدأ رحلتنا 🚀</button>
+        </div>
+
+        <!-- Step 2: Patient Scenario -->
+        <div class="step" id="step-2">
+            <div class="patient-card">
+                <div class="avatar" id="patient-avatar">👤</div>
+                <h2 id="patient-name">اسم العميل</h2>
+                <div id="patient-details">
+                    <p><strong>العمر:</strong> <span id="patient-age"></span></p>
+                    <p><strong>الطول:</strong> <span id="patient-height"></span></p>
+                    <p><strong>الوزن:</strong> <span id="patient-weight"></span></p>
+                    <p><strong>مستوى النشاط البدنى:</strong> <span id="patient-activity"></span></p>
+                    <p><strong>معلومات عامة:</strong> <span id="patient-lifestyle"></span></p>
+                </div>
+            </div>
+            <button class="btn" onclick="proceedToBMI()">Calculate BMI 📊</button>
+        </div>
+
+        <!-- Step 3: BMI Calculator -->
+        <div class="step" id="step-3">
+            <div class="bmi-calculator">
+                <h2>🧮 BMI Calculator</h2>
+                <div class="slider-container">
+                    <label>Height: <span id="height-display">170</span> cm</label>
+                    <input type="range" class="slider" id="height-slider" min="140" max="220" value="170" oninput="updateBMI()">
+                </div>
+                <div class="slider-container">
+                    <label>Weight: <span id="weight-display">70</span> kg</label>
+                    <input type="range" class="slider" id="weight-slider" min="40" max="150" value="70" oninput="updateBMI()">
+                </div>
+                <div class="bmi-result" id="bmi-result">
+                    BMI: <span id="bmi-value">24.2</span><br>
+                    <span id="bmi-category">Normal Weight</span>
+                </div>
+            </div>
+            <button class="btn" onclick="proceedToPharmacy()">إلى المكملات 💊</button>
+        </div>
+
+        <!-- Step 4: Supplement Selection -->
+        <div class="step" id="step-4">
+            <h2>🏪 أختار أنسب المكملات للعميل</h2>
+            <p>بناء على المعلومات التى حصلت عليها من فضلك رشح للعميل أفضل المكملات المناسبة له</p>
+            <div class="supplements-grid" id="supplements-grid">
+                <!-- Supplements will be populated by JavaScript -->
+            </div>
+            <button class="btn" onclick="checkSelection()" id="check-btn">ترشيح  ✅</button>
+            <button class="btn" onclick="rstartScenario()" id="check-btn">رجوع لتفاصيل العميل  </button>
+        </div>
+
+        <!-- Step 5: Outcome -->
+        <div class="step" id="step-5">
+            <h2>📊 بعد ثلاثة أشهر ...</h2>
+            <div class="patient-card">
+                <div class="avatar" id="result-avatar">👤</div>
+                <div id="outcome-message"></div>
+            </div>
+            <div class="feedback" id="final-feedback"></div>
+            <button class="btn" onclick="restart()">جرب حالة أخرى 🔄</button>
+        </div>
+    </div>
+
+    <div class="celebration" id="celebration"></div>
+
+    <script>
+        // Game state
+        let gameState = {
+            learnerName: '',
+            selectedGroup: '',
+            currentPatient: null,
+            currentBMI: 0,
+            selectedSupplements: [],
+            points: 0,
+            currentStep: 1
+        };
+
+        // Patient data for different groups
+        const patients = {
+            A: {
+                name: "سعيد",
+                emoji: "pic\\1.png",
+                age: 49,
+                height: 155,
+                weight: 150,
+                activity: "لا يمارس الرياضة",
+                lifestyle:  "سعيد يعانى من السمنة وقد وصف له الطبيب عقار MOUNJARO" ,
+                correctSupplements: ["L-CARNITINE", "STEVIA","JAMISON MULTI-VITAMIN","DOMPY"]
+            },
+            B: {
+                name: "فهد",
+                emoji: "pic\\2.png",
+                age: 43,
+                height: 175,
+                weight: 115,
+                activity: "يحاول عمل بعض التمارين البسيطة",
+                lifestyle: "فهد يعمل معلم وهو مصاب بالضغط ",
+                correctSupplements: ["SUPER FIBERS", "L-CARNITINE",  "STEVIA","JAMISON MULTI-VITAMIN",s]
+            },
+            C: {
+                name: "ماجد",
+                emoji: "pic\\3.png",
+                age: 51,
+                height: 165,
+                weight: 115,
+                activity: "مواظب على المشى يوميًا",
+                lifestyle: "ماجد يعانى من السمنة بالاضافة إلى السكر والضغط ويستخدم عدة أدوية",
+                correctSupplements: ["APLEFIT",  "STEVIA","JAMISON MULTI-VITAMIN",]
+            },
+            D: {
+                name: "سامح",
+                emoji: "pic\\4.png",
+                age: 29,
+                height: 179,
+                weight: 95,
+                activity: "يمارس الرياضة بشكل متقطع",
+                lifestyle: "سامح شخص يحاول المحافظة على الرياضة ولكن شهيته دائما مفتوحة ويريد فقدان بعض الوزن ليصل الى الوزن المثالى",
+                correctSupplements: ["SUPER FIBERS", "GLAVOLEAN",  "STEVIA","JAMISON MULTI-VITAMIN"]
+            },
+            E: {
+                name: "ليلى",
+                emoji: "pic\\5.png",
+                age: 39,
+                height: 165,
+                weight: 85,
+                activity:  "لا تستطيع الاتزام بنظام رياضى",
+                lifestyle:  "ليلى تحب الطعام السريع و لا تستطيع الالتزام بنظام غذاء صحى",
+                correctSupplements: ["FATLOSS", "APPLE CIDER",  "STEVIA","JAMISON MULTI-VITAMIN"]
+            }
+        };
+
+        // Supplement options
+        const supplements = {
+            "DOMPY": { name: "DOMPY", icon: "pic\\dompy.png", description: "" },
+            "APLEFIT": { name: "APLEFIT", icon: "pic\\aplefit.png", description: "" },
+            "FATLOSS": { name: "FATLOSS", icon: "pic\\fatloss.png", description: "" },
+            "SUPER FIBERS": { name: "HIGH FIBERS", icon: "pic\\highfibers.png", description: "" },
+            "L-CARNITINE": { name: "L-CARNITINE", icon: "pic\\lcarnitine.png", description: "" },
+            "GLAVOLEAN": { name: "GLAVOLEAN", icon: "pic\\glavolean.png", description: "" },
+            "APPLE CIDER": { name: "APPLE CIDER", icon: "pic\\applecider.png", description: "" },
+            "STEVIA": { name: "STEVIA", icon: "pic\\stev.png", description: "" },
+            "JAMISON MULTI-VITAMIN": { name: "JAMISON MULTI-VITAMIN", icon: "pic\\multi.png", description: "" }
+        };
+
+        function startScenario() {
+            const name = document.getElementById('learner-name').value.trim();
+            const group = document.getElementById('group-select').value;
+
+            if (!name || !group) {
+                alert('Please enter your name and select a group!');
+                return;
+            }
+
+            gameState.learnerName = name;
+            gameState.selectedGroup = group;
+            gameState.currentPatient = patients[group];
+
+            displayPatient();
+            nextStep(2);
+            addPoints(10);
+        }
+        function rstartScenario() {
+            const name = document.getElementById('learner-name').value.trim();
+            const group = document.getElementById('group-select').value;
+
+            if (!name || !group) {
+                alert('Please enter your name and select a group!');
+                return;
+            }
+
+            gameState.learnerName = name;
+            gameState.selectedGroup = group;
+            gameState.currentPatient = patients[group];
+
+            displayPatient();
+            nextStep(2);
+            addPoints(0);
+        }
+
+        function displayPatient() {
+            const patient = gameState.currentPatient;
+            document.getElementById('patient-avatar').innerHTML = `<img src="${patient.emoji}" alt="Patient Avatar">`;
+            document.getElementById('patient-name').textContent = "اسم العميل:" + patient.name;
+            document.getElementById('patient-age').textContent = patient.age;
+            document.getElementById('patient-height').textContent = patient.height + ' سم';
+            document.getElementById('patient-weight').textContent = patient.weight + ' كيلو';
+            document.getElementById('patient-activity').textContent = patient.activity;
+            document.getElementById('patient-lifestyle').textContent = patient.lifestyle;
+
+            // Set slider values
+            document.getElementById('height-slider').value = patient.height;
+            document.getElementById('weight-slider').value = patient.weight;
+            updateBMI();
+        }
+
+        function proceedToBMI() {
+            nextStep(3);
+            addPoints(10);
+        }
+
+        function updateBMI() {
+            const height = document.getElementById('height-slider').value;
+            const weight = document.getElementById('weight-slider').value;
+            
+            document.getElementById('height-display').textContent = height;
+            document.getElementById('weight-display').textContent = weight;
+
+            const heightM = height / 100;
+            const bmi = (weight / (heightM * heightM)).toFixed(1);
+            gameState.currentBMI = parseFloat(bmi);
+
+            document.getElementById('bmi-value').textContent = bmi;
+
+            let category = '';
+            let color = '';
+            if (bmi < 18.5) {
+                category = 'Underweight';
+                color = '#4facfe';
+            } else if (bmi < 25) {
+                category = 'Normal Weight';
+                color = '#7fcdcd';
+            } else if (bmi < 30) {
+                category = 'Overweight';
+                color = '#ffb366';
+            } else {
+                category = 'Obese';
+                color = '#ff9999';
+            }
+
+            document.getElementById('bmi-category').textContent = category;
+            document.getElementById('bmi-result').style.backgroundColor = color;
+        }
+
+        function proceedToPharmacy() {
+            displaySupplements();
+            nextStep(4);
+            addPoints(15);
+        }
+
+        function reproceedToPharmacy() {
+            displaySupplements();
+            nextStep(4);
+            addPoints(-5);
+        }
+
+        function displaySupplements() {
+            const grid = document.getElementById('supplements-grid');
+            grid.innerHTML = '';
+
+            Object.keys(supplements).forEach(key => {
+                const supplement = supplements[key];
+                const card = document.createElement('div');
+                card.className = 'supplement-card';
+                card.dataset.supplement = key;
+                // class="supplement-icon"
+                card.innerHTML = `
+                    <div ><img src="${supplement.icon}" alt="Patient Avatar"</div>
+                    <h3>${supplement.name}</h3>
+                    <p>${supplement.description}</p>
+                `;
+                card.onclick = () => toggleSupplement(key, card);
+                grid.appendChild(card);
+            });
+        }
+
+        function toggleSupplement(key, card) {
+            if (gameState.selectedSupplements.includes(key)) {
+                gameState.selectedSupplements = gameState.selectedSupplements.filter(s => s !== key);
+                card.classList.remove('selected');
+            } else {
+                gameState.selectedSupplements.push(key);
+                card.classList.add('selected');
+            }
+        }
+
+        function checkSelection() {
+            // console.log("done")
+            const correct = gameState.currentPatient.correctSupplements;
+            const selected = gameState.selectedSupplements;
+            // console.log(correct)
+            // console.log(selected)
+
+            const isCorrect = correct.length === selected.length && 
+                            correct.every(s => selected.includes(s));
+            console.log(isCorrect)
+            if (isCorrect) {
+                addPoints(50);
+                showSuccess();
+            } else {
+                showError();
+                //proceedToPharmacy();
+            }
+
+            nextStep(5);
+        }
+
+        function showSuccess() {
+            console.log('right')
+            const avatar = document.getElementById('result-avatar');
+            avatar.textContent = "😃";
+            avatar.classList.add('happy');
+
+            document.getElementById('outcome-message').innerHTML = `
+                <h3>🎉 ممتاز!</h3>
+                <p><strong>${gameState.currentPatient.name}</strong> يشعر بتحسن!</p>
+                <p>"شكرًا يا دكتور, ${gameState.learnerName}! بفضل الله تعالى ثم المكملات التى رشحتها لى أشعر بتحسن الآن"</p>
+            `;
+
+            document.getElementById('final-feedback').className = 'feedback success';
+            document.getElementById('final-feedback').innerHTML = `
+                <h3>تمت المهمة بنجاح! 🏆</h3>
+                <p>لقد قمت بترشيح خيارات مناسبة فعلا للعميل.</p>
+                <p><strong>النقاط التى حصلت عليها:</strong> ${gameState.points}</p>
+            `;
+
+            createCelebration();
+            playSuccessSound();
+        }
+
+        function showError() {
+            
+            const avatar = document.getElementById('result-avatar');
+            avatar.textContent = "😠";
+            avatar.classList.add('sad');
+
+            setTimeout(() => {
+                avatar.classList.remove('sad');
+            }, 500);
+
+            document.getElementById('final-feedback').className = 'feedback error';
+            document.getElementById('final-feedback').innerHTML = `
+                <h3>لا يوجد تحسن ملحوظ.. 🤔</h3>
+                <p>المكملات التى رشحتها ربما ليست أنسب خيار لهذة الحالة.</p>
+                <button class="btn" onclick="retrySelection()">حاول مرة أخرى 🔄</button>
+            `;
+
+            document.getElementById('final-feedback').style.display = 'block';
+        }
+
+        function retrySelection() {
+            gameState.selectedSupplements = [];
+            document.querySelectorAll('.supplement-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            document.getElementById('final-feedback').style.display = 'none';
+            reproceedToPharmacy()
+        }
+
+        function createCelebration() {
+            const celebration = document.getElementById('celebration');
+            celebration.innerHTML = '';
+
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.backgroundColor = ['#667eea', '#764ba2', '#f093fb', '#f5576c', '#4facfe'][Math.floor(Math.random() * 5)];
+                confetti.style.animationDelay = Math.random() * 3 + 's';
+                celebration.appendChild(confetti);
+            }
+
+            setTimeout(() => {
+                celebration.innerHTML = '';
+            }, 3000);
+        }
+
+        function playSuccessSound() {
+            const audio = new Audio('correct.mp3'); // Replace with the path to your sound file
+            audio.play()
+            console.log('🔊 Success sound played!');
+        }
+
+        function nextStep(stepNumber) {
+            document.querySelectorAll('.step').forEach(step => {
+                step.classList.remove('active');
+            });
+            document.getElementById(`step-${stepNumber}`).classList.add('active');
+
+            // Update progress bar
+            const progress = (stepNumber / 5) * 100;
+            document.querySelector('.progress-fill').style.width = progress + '%';
+
+            // Update step indicators
+            document.querySelectorAll('.step-dot').forEach((dot, index) => {
+                dot.classList.toggle('active', index < stepNumber);
+            });
+
+            gameState.currentStep = stepNumber;
+        }
+
+        function addPoints(points) {
+            gameState.points += points;
+            document.getElementById('points').textContent = gameState.points;
+            
+            // Animate points
+            const pointsDisplay = document.querySelector('.points-display');
+            pointsDisplay.style.transform = 'scale(1.2)';
+            setTimeout(() => {
+                pointsDisplay.style.transform = 'scale(1)';
+            }, 200);
+        }
+
+        function restart() {
+            gameState = {
+                learnerName: '',
+                selectedGroup: '',
+                currentPatient: null,
+                currentBMI: 0,
+                selectedSupplements: [],
+                points: 0,
+                currentStep: 1
+            };
+
+            document.getElementById('learner-name').value = '';
+            document.getElementById('group-select').value = '';
+            document.getElementById('points').textContent = '0';
+            
+            nextStep(1);
+        }
+
+        // Initialize sliders
+        updateBMI();
+    </script>
+</body>
+</html>
