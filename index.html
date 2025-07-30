@@ -743,6 +743,12 @@
                 avatar.classList.remove('sad');
             }, 500);
 
+            document.getElementById('outcome-message').innerHTML = `
+                <h3>حاول مرة أخرى!</h3>
+                <p><strong>${gameState.currentPatient.name}</strong> لم يشعر بالتحسن المطلوب!</p>
+                <p>" يا دكتور, ${gameState.learnerName}! الترشيح لم يكن مناسبًا."</p>
+            `;
+
             document.getElementById('final-feedback').className = 'feedback error';
             document.getElementById('final-feedback').innerHTML = `
                 <h3>ربما ليست أنسب خيار.. 🤔</h3>
